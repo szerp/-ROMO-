@@ -8,48 +8,48 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: 'var(--color-primary)',
-          light: 'var(--color-primary-light)',
-          dark: 'var(--color-primary-dark)',
+          DEFAULT: "var(--color-primary)",
+          light: "var(--color-primary-light)",
+          dark: "var(--color-primary-dark)",
         },
         secondary: {
-          DEFAULT: 'var(--color-secondary)',
-          light: 'var(--color-secondary-light)',
-          dark: 'var(--color-secondary-dark)',
+          DEFAULT: "var(--color-secondary)",
+          light: "var(--color-secondary-light)",
+          dark: "var(--color-secondary-dark)",
         },
         accent: {
-          DEFAULT: 'var(--color-accent)',
-          light: 'var(--color-accent-light)',
-          dark: 'var(--color-accent-dark)',
+          DEFAULT: "var(--color-accent)",
+          light: "var(--color-accent-light)",
+          dark: "var(--color-accent-dark)",
         },
-        background: 'var(--color-background)',
-        surface: 'var(--color-surface)',
+        background: "var(--color-background)",
+        surface: "var(--color-surface)",
         text: {
-          DEFAULT: 'var(--color-text)',
-          light: 'var(--color-text-light)',
+          DEFAULT: "var(--color-text)",
+          light: "var(--color-text-light)",
         },
-        border: 'var(--color-border)',
+        border: "var(--color-border)",
       },
     },
   },
   plugins: [
-    function({ addUtilities, theme }) {
-      // Add opacity variants for theme colors
+    // Custom plugin to add opacity variants for our theme colors.
+    function ({ addUtilities }) {
       const opacityUtilities = {};
-      const colors = ['primary', 'secondary', 'accent', 'text'];
+      const colors = ["primary", "secondary", "accent", "text"];
       const opacities = {
-        10: '0.1',
-        20: '0.2',
-        30: '0.3',
-        40: '0.4',
-        50: '0.5',
-        60: '0.6',
-        70: '0.7',
-        80: '0.8',
-        90: '0.9',
+        10: "0.1",
+        20: "0.2",
+        30: "0.3",
+        40: "0.4",
+        50: "0.5",
+        60: "0.6",
+        70: "0.7",
+        80: "0.8",
+        90: "0.9",
       };
 
-      colors.forEach(color => {
+      colors.forEach((color) => {
         Object.entries(opacities).forEach(([key, value]) => {
           opacityUtilities[`.bg-${color}\\/${key}`] = {
             backgroundColor: `rgb(var(--color-${color}-rgb) / ${value})`,
@@ -61,10 +61,10 @@ export default {
             borderColor: `rgb(var(--color-${color}-rgb) / ${value})`,
           };
           opacityUtilities[`.ring-${color}\\/${key}`] = {
-            '--tw-ring-color': `rgb(var(--color-${color}-rgb) / ${value})`,
+            "--tw-ring-color": `rgb(var(--color-${color}-rgb) / ${value})`,
           };
           opacityUtilities[`.placeholder-${color}\\/${key}`] = {
-            '::placeholder': {
+            "::placeholder": {
               color: `rgb(var(--color-${color}-rgb) / ${value})`,
             },
           };
@@ -74,4 +74,4 @@ export default {
       addUtilities(opacityUtilities);
     },
   ],
-}
+};
