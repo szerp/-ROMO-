@@ -1,0 +1,39 @@
+@tailwind base;
+
+@layer base {
+  :root {
+    /* Theme CSS Variables */
+    --card-accent: theme('colors.primary.DEFAULT');
+    --card-input-bg: theme('colors.white/10');
+    --card-input-border: theme('colors.white/20');
+    --card-input-focus: theme('colors.primary/50');
+    --card-button-primary: theme('colors.primary.DEFAULT');
+    --card-button-hover: theme('colors.primary/90');
+    --card-button-disabled: theme('colors.gray.500');
+  }
+
+  /* Themed Input Styles */
+  .themed-card input[type="text"],
+  .themed-card input[type="number"],
+  .themed-card textarea {
+    @apply bg-[var(--card-input-bg)] 
+           border-[var(--card-input-border)]
+           focus:ring-[var(--card-input-focus)]
+           placeholder:text-white/50;
+  }
+
+  /* Themed Button Styles */
+  .themed-card button:not([class*="hover:"]) {
+    @apply bg-[var(--card-button-primary)]
+           hover:bg-[var(--card-button-hover)]
+           disabled:bg-[var(--card-button-disabled)];
+  }
+
+  /* Themed Progress Bar */
+  .themed-card .progress-bar {
+    @apply bg-[var(--card-accent)];
+  }
+}
+
+@tailwind components;
+@tailwind utilities;
