@@ -4,31 +4,13 @@ const STORAGE_KEY = 'hobbies';
 
 export async function getHobbies(): Promise<Hobby[]> {
   const data = localStorage.getItem(STORAGE_KEY);
-  if (data) {
-    try {
-      const parsed: Hobby[] = JSON.parse(data);
-      return parsed;
-    } catch (error) {
-      console.error("Error parsing hobbies from local storage:", error);
-      return [];
-    }
-  }
-  return [];
+  return data ? JSON.parse(data) : [];
 }
 
 export async function addHobby(hobby: Omit<Hobby, 'id'>): Promise<Hobby> {
   const current = await getHobbies();
-  const newHobby: Hobby = {
-    id: Date.now().toString(),
-    name: hobby.name,
-    timeSpent: hobby.timeSpent,
-    goal: hobby.goal,
-    priority: hobby.priority,
-    frequency: hobby.frequency,
-    lastActivity: hobby.lastActivity
-  };
-  const updated = [newHobby, ...current];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  const newHobby: Hobby = { id: Date.now().toString(), ...hobby };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([newHobby, ...current]));
   return newHobby;
 }
 

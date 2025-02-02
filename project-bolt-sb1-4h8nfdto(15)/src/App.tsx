@@ -14,38 +14,26 @@ export default function App() {
       <ThemeProvider>
         <GoalsProvider>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <Layout>
-                  <Dashboard />
-                </Layout>
-              }
-            />
-            <Route
-              path="/recipes"
-              element={
-                <Layout>
-                  <RecipeLibrary />
-                </Layout>
-              }
-            />
-            <Route
-              path="/history"
-              element={
-                <Layout>
-                  <History />
-                </Layout>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <Layout>
-                  <Settings />
-                </Layout>
-              }
-            />
+            <Route path="/" element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            } />
+            <Route path="/recipes" element={
+              <Layout>
+                <RecipeLibrary />
+              </Layout>
+            } />
+            <Route path="/history" element={
+              <Layout>
+                <History />
+              </Layout>
+            } />
+            <Route path="/settings" element={
+              <Layout>
+                <Settings />
+              </Layout>
+            } />
           </Routes>
         </GoalsProvider>
       </ThemeProvider>

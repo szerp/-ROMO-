@@ -7,25 +7,22 @@ export async function getMovements(): Promise<Movement[]> {
   if (data) {
     try {
       const parsed: Movement[] = JSON.parse(data);
-      // Sort by completedAt descending.
-      // If completedAt is undefined, treat it as the earliest date.
+      // Sort by completedAt descending. If completedAt is missing, treat it as the earliest date.
       return parsed.sort((a, b) => {
         const dateA = a.completedAt ? new Date(a.completedAt) : new Date(0);
         const dateB = b.completedAt ? new Date(b.completedAt) : new Date(0);
         return dateB.getTime() - dateA.getTime();
       });
     } catch (error) {
-      console.error("Error parsing movements from local storage:", error);
+      console.error("Error parsing movements:", error);
       return [];
     }
   }
   return [];
 }
 
-export async function addMovement(
-  movement: Omit<Movement, 'id'>
-): Promise<Movement> {
-  const newMovement = { ...movement, id: Date.now().toString() } as Movement;
+export async function addMovement(movement: Omit<Movement, 'id'>): Promise<Movement> {
+  const newMovement: Movement = { ...movement, id: Date.now().toString() };
   const current = await getMovements();
   const updated = [newMovement, ...current];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -34,6 +31,6 @@ export async function addMovement(
 
 export async function deleteMovement(id: string): Promise<void> {
   const current = await getMovements();
-  const updated = current.filter((m) => m.id !== id);
+  const updated = current.filter(m => m.id !== id);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }

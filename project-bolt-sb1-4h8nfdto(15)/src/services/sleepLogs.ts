@@ -7,12 +7,9 @@ export async function getSleepLogs(): Promise<Sleep[]> {
   if (data) {
     try {
       const parsed: Sleep[] = JSON.parse(data);
-      // Sort by date descending
-      return parsed.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+      return parsed.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     } catch (error) {
-      console.error("Error parsing sleep logs from local storage:", error);
+      console.error("Error parsing sleep logs:", error);
       return [];
     }
   }
@@ -21,11 +18,9 @@ export async function getSleepLogs(): Promise<Sleep[]> {
 
 export async function addSleepLog(sleep: Sleep): Promise<Sleep> {
   const current = await getSleepLogs();
-  // Assume sleep object is complete and valid
-  const newSleep: Sleep = { ...sleep };
-  const updated = [newSleep, ...current];
+  const updated = [sleep, ...current];
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  return newSleep;
+  return sleep;
 }
 
 export async function deleteSleepLog(date: string): Promise<void> {
