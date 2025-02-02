@@ -1,41 +1,41 @@
-import { supabase } from '../lib/supabase';
 import type { DailyCheckInData } from '../types';
 
-export async function getCheckIns() {
-  const { data, error } = await supabase
-    .from('check_ins')
-    .select('mood, energy, notes, timestamp')
-    .order('timestamp', { ascending: false });
+const STORAGE_KEY = 'check_ins';
 
-  if (error) throw error;
-  return data as DailyCheckInData[];
+export async function getCheckIns(): Promise<DailyCheckInData[]> {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    try {
+      const parsed: DailyCheckInData[] = JSON.parse(data);
+      // Sort by timestamp descending
+      return parsed.sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+    } catch (error) {
+      console.error("Error parsing check-ins from local storage:", error);
+      return [];
+    }
+  }
+  return [];
 }
 
-export async function addCheckIn(checkIn: Omit<DailyCheckInData, 'id'>) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
-
-  const { data, error } = await supabase
-    .from('check_ins')
-    .insert([{ 
-      user_id: user.id,
-      mood: checkIn.mood,
-      energy: checkIn.energy,
-      notes: checkIn.notes,
-      timestamp: checkIn.timestamp
-    }])
-    .select('mood, energy, notes, timestamp')
-    .single();
-
-  if (error) throw error;
-  return data;
+export async function addCheckIn(
+  checkIn: Omit<DailyCheckInData, 'id'>
+): Promise<DailyCheckInData> {
+  // Generate an id using the current timestamp.
+  // Make sure your DailyCheckInData type includes an "id" property.
+  const newCheckIn = { ...checkIn, id: Date.now().toString() } as DailyCheckInData;
+  const current = await getCheckIns();
+  const updated = [newCheckIn, ...current];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return newCheckIn;
 }
 
-export async function deleteCheckIn(timestamp: Date) {
-  const { error } = await supabase
-    .from('check_ins')
-    .delete()
-    .eq('timestamp', timestamp.toISOString());
-
-  if (error) throw error;
+export async function deleteCheckIn(timestamp: Date): Promise<void> {
+  const current = await getCheckIns();
+  const updated = current.filter(
+    (checkIn) =>
+      new Date(checkIn.timestamp).toISOString() !== timestamp.toISOString()
+  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }

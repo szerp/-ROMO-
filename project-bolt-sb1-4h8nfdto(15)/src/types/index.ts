@@ -1,14 +1,15 @@
+export interface DailyCheckInData {
+  id: string;
+  mood: string;
+  energy: number;
+  notes: string;
+  timestamp: string;
+}
 export interface Affirmation {
   teaser: string;
   full: string;
 }
 
-export interface DailyCheckInData {
-  mood: number;
-  energy: number;
-  notes: string;
-  timestamp: Date;
-}
 
 export interface Goal {
   id: string;

@@ -1,62 +1,39 @@
-import { supabase } from '../lib/supabase';
 import type { Movement } from '../types';
 
-export async function getMovements() {
-  const { data, error } = await supabase
-    .from('movements')
-    .select(`
-      id,
-      name,
-      description,
-      difficulty,
-      duration,
-      "jointFriendly",
-      completed,
-      "completedAt"
-    `)
-    .order('completedAt', { ascending: false });
+const STORAGE_KEY = 'movements';
 
-  if (error) throw error;
-  return data as Movement[];
+export async function getMovements(): Promise<Movement[]> {
+  const data = localStorage.getItem(STORAGE_KEY);
+  if (data) {
+    try {
+      const parsed: Movement[] = JSON.parse(data);
+      // Sort by completedAt descending.
+      // If completedAt is undefined, treat it as the earliest date.
+      return parsed.sort((a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt) : new Date(0);
+        const dateB = b.completedAt ? new Date(b.completedAt) : new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+    } catch (error) {
+      console.error("Error parsing movements from local storage:", error);
+      return [];
+    }
+  }
+  return [];
 }
 
-export async function addMovement(movement: Omit<Movement, 'id'>) {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('User not authenticated');
-
-  const { data, error } = await supabase
-    .from('movements')
-    .insert([{
-      user_id: user.id,
-      name: movement.name,
-      description: movement.description,
-      difficulty: movement.difficulty,
-      duration: movement.duration,
-      "jointFriendly": movement.jointFriendly,
-      completed: movement.completed,
-      "completedAt": movement.completedAt
-    }])
-    .select(`
-      id,
-      name,
-      description,
-      difficulty,
-      duration,
-      "jointFriendly",
-      completed,
-      "completedAt"
-    `)
-    .single();
-
-  if (error) throw error;
-  return data;
+export async function addMovement(
+  movement: Omit<Movement, 'id'>
+): Promise<Movement> {
+  const newMovement = { ...movement, id: Date.now().toString() } as Movement;
+  const current = await getMovements();
+  const updated = [newMovement, ...current];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  return newMovement;
 }
 
-export async function deleteMovement(id: string) {
-  const { error } = await supabase
-    .from('movements')
-    .delete()
-    .eq('id', id);
-
-  if (error) throw error;
+export async function deleteMovement(id: string): Promise<void> {
+  const current = await getMovements();
+  const updated = current.filter((m) => m.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 }
